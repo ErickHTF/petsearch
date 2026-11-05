@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
 await build({
-  entryPoints: ['src/server.ts'],
+  entryPoints: ['src/server.ts', 'src/seed/run.ts'],
   outdir: 'dist',
   outbase: 'src',
   bundle: true,
