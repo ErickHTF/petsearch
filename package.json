@@ -10,6 +10,7 @@
     "node": ">=22.12"
   },
   "scripts": {
+    "db:up": "docker compose up -d db",
     "dev:api": "npm run dev -w @petsearch/api",
     "dev:web": "npm run dev -w @petsearch/web",
     "lint": "eslint .",
@@ -22,7 +23,8 @@
     "seed": "npm run seed -w @petsearch/api",
     "e2e": "playwright test",
     "check:trace": "node scripts/check-traceability.mjs",
-    "test:scripts": "node --test scripts/"
+    "test:scripts": "node --test scripts/",
+    "db:generate": "npm run db:generate -w @petsearch/api"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

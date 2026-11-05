@@ -5,7 +5,15 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/coverage/**', 'playwright-report/**', 'test-results/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/coverage/**',
+      'playwright-report/**',
+      'test-results/**',
+      '.claude/**',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

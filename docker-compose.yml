@@ -1,9 +1,35 @@
+# Local stack (OQ-25). Dev credentials only; production uses secrets from the host (PRV-05).
 services:
-  mongo:
-    image: mongo:7
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: petsearch
+      POSTGRES_PASSWORD: petsearch
+      POSTGRES_DB: petsearch
     ports:
-      - '27017:27017'
+      - '5432:5432'
     volumes:
-      - mongo-data:/data/db
+      - db-data:/var/lib/postgresql/data
+      - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U petsearch']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://petsearch:petsearch@db:5432/petsearch
+      SESSION_SECRET: ${SESSION_SECRET:-dev-only-secret-change-me}
+      MODERATOR_EMAILS: ${MODERATOR_EMAILS:-}
+      # Local compose runs over plain HTTP; production keeps secure cookies.
+      COOKIE_SECURE: 'false'
+    ports:
+      - '3000:3000'
+
 volumes:
-  mongo-data:
+  db-data:
