@@ -16,12 +16,13 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present && npm run test:scripts",
     "build": "npm run build -w @petsearch/web && npm run build -w @petsearch/api",
     "start": "node apps/api/dist/server.js",
     "seed": "npm run seed -w @petsearch/api",
     "e2e": "playwright test",
-    "check:trace": "node scripts/check-traceability.mjs"
+    "check:trace": "node scripts/check-traceability.mjs",
+    "test:scripts": "node --test scripts/"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
