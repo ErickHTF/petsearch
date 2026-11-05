@@ -38,7 +38,7 @@ Today is 2026-11-05. Entrega 4 is due 15/11 (10 days). The window covers buildin
 
 ## 2. Stack
 
-Full rationale in `docs/adr/0001-stack.md`. Summary, honoring S p8 (React + TypeScript, Node.js, MongoDB):
+Full rationale in `docs/adr/0001-stack.md`. Summary. Honors S p8 (React + TypeScript, Node.js) except the database: PostgreSQL replaces MongoDB by owner decision (OQ-25).
 
 | Concern | Choice | Why (short) |
 |---|---|---|
@@ -53,14 +53,14 @@ Full rationale in `docs/adr/0001-stack.md`. Summary, honoring S p8 (React + Type
 | Forms and validation | React Hook Form + Zod resolver | Accessible native inputs; the same Zod schemas as the API |
 | Shared validation | Zod schemas in `packages/shared` | One definition for client checks, API validation and TS types |
 | API framework | Express 5 | Most familiar to the group, so 9 members can maintain it; Express 5 handles async errors natively |
-| Database | MongoDB 7 with Mongoose 8 | Slide stack; Mongoose gives schemas and indexes |
-| Images | `multer` (memory) -> `sharp` (resize to 1280px WebP, strip metadata) -> MongoDB GridFS | No extra storage account; EXIF/GPS removed (PRV-08); fits Atlas M0 at about 150 KB per image |
-| Auth | Email + password (argon2id), server sessions in MongoDB (`express-session` + `connect-mongo`), httpOnly SameSite=Lax secure cookie; roles `owner`, `moderator` | No email provider needed; same-origin deploy means no CORS or token storage in JS (OQ-10) |
+| Database | PostgreSQL 17 with Drizzle ORM + `pg`; SQL migrations in `apps/api/drizzle/` | Owner decision (OQ-25); foreign keys with cascades back LGPD deletion |
+| Images | `multer` (memory) -> `sharp` (resize to 1280px WebP, strip metadata) -> `images` table (`bytea`) | No extra storage account; EXIF/GPS removed (PRV-08); about 150 KB per image |
+| Auth | Email + password (argon2id), server sessions in PostgreSQL (`express-session` + `connect-pg-simple`), httpOnly SameSite=Lax secure cookie; roles `owner`, `moderator` | No email provider needed; same-origin deploy means no CORS or token storage in JS (OQ-10) |
 | Security middleware | `helmet`, `express-rate-limit`, honeypot field | PRV-05, PRV-09 |
-| Local dev | Docker Compose running only MongoDB 7; app runs with `npm run dev` | One container, quick start |
-| Hosting | Single Render free web service (API also serves the built SPA) + MongoDB Atlas M0 | $0, one origin, HTTPS included. Trade-off: cold start of about 50 s after idle, so warm it up before demos (OQ-12) |
+| Containers and local dev | Multi-stage `Dockerfile` (web + API in one image); `docker compose up` runs `db` + `app`; for hot reload run only `db` and `npm run dev:api` / `dev:web` | Owner decision (OQ-25); same image locally and in production |
+| Hosting | The Docker image on a Render free web service (API also serves the built SPA) + Neon free PostgreSQL | $0, one origin, HTTPS included. Trade-off: cold start of about 50 s after idle, so warm it up before demos (OQ-12) |
 | PWA | `vite-plugin-pwa` (manifest now, app-shell cache for 30/11) | NFR-09 |
-| Tests | Vitest (unit, components with Testing Library), Supertest + `mongodb-memory-server` (API), Playwright at 360x800 (E2E), `@axe-core/playwright` (a11y) | Covers the full testing strategy with mainstream tools |
+| Tests | Vitest (unit, components with Testing Library), Supertest against a `petsearch_test` PostgreSQL database (API), Playwright at 360x800 (E2E), `@axe-core/playwright` (a11y) | Covers the full testing strategy with mainstream tools |
 | Lint and format | ESLint (typescript-eslint, react, jsx-a11y) + Prettier; `tsc --noEmit` | Quality gates (PRC-09) |
 | CI | GitHub Actions: lint, typecheck, test, build, check-traceability | PRC-05, PRC-09 |
 
@@ -85,7 +85,7 @@ Routes are user-visible, so they are in pt-BR; components and code stay in Engli
 
 ## 4. Data model
 
-All collections have `createdAt` and `updatedAt`. **Public** = can appear in unauthenticated API responses. Public responses are built by an explicit allowlist serializer per entity, never by returning documents (PRV-01).
+All tables have `id` (uuid), `created_at` and `updated_at`; names below are the TypeScript field names (columns are snake_case). Arrays such as `coatColors` are `text[]`; `animal.*` fields are flat columns. **Public** = can appear in unauthenticated API responses. Public responses are built by an explicit allowlist serializer per entity, never by returning documents (PRV-01).
 
 ### Neighborhood (static, `packages/shared/neighborhoods.ts`)
 - `slug`, `name`. Source list to be provided or confirmed (OQ-11). Includes "Outro / não sei".
@@ -100,7 +100,7 @@ All collections have `createdAt` and `updatedAt`. **Public** = can appear in una
 | `consent` | `{ acceptedAt, policyVersion }` | no |
 | `deletedAt` | date \| null | no |
 
-Indexes: `email` unique.
+Indexes: `email` unique. Deleting a user cascades to their notices.
 
 ### Notice (`notices`)
 | Field | Type | Public |
@@ -117,34 +117,34 @@ Indexes: `email` unique.
 | `neighborhood` | slug from the list | yes |
 | `eventDate` | date, not in the future | yes |
 | `description` | string, max 1000, pattern-checked | yes |
-| `photos` | `[{ fileId, alt, width, height }]`, 1 to 3 | yes (served via `/api/images/:fileId`) |
-| `timeline` | `[{ at, toStatus?, note }]` (note max 300, pattern-checked) | yes |
+| `photos` | rows in `images` (`notice_id`, `position`, `alt`, `width`, `height`, `visibility`, `content bytea`), 1 to 3 | yes (served via `/api/images/:id`) |
+| `timeline` | rows in `notice_events` (`at`, `status?`, `note`; note max 300, pattern-checked) | yes |
 | `isFictional` | boolean | yes (drives the "Exemplo fictício" badge) |
-| `ownerId` | ObjectId | no |
+| `ownerId` | uuid FK -> users, on delete cascade | no |
 | `consent` | `{ acceptedAt, policyVersion }` | no |
-| `moderation` | `{ state: visible \| hidden, reason?, by?, at? }` | no (hidden items are filtered out) |
+| `hidden`, `hiddenReason`, `hiddenAt` | moderation state | no (hidden items are filtered out) |
 | `lastActivityAt` | date | no |
 
-Indexes: `{ "moderation.state": 1, status: 1, neighborhood: 1, eventDate: -1 }`, `{ "animal.species": 1, "animal.size": 1 }`, `{ ownerId: 1 }`.
+Indexes: `(hidden, status, neighborhood, event_date)`, `(species, size)`, `(owner_id)`.
 
 ### Sighting (`sightings`): sightings and messages to the owner
 | Field | Type | Visible to |
 |---|---|---|
-| `noticeId` | ObjectId | owner, moderator |
+| `noticeId` | uuid FK -> notices, on delete cascade | owner, moderator |
 | `kind` | `sighting` \| `message` | owner, moderator |
 | `seenAt` | date (sighting only) | owner, moderator |
 | `neighborhood` | slug (sighting only) | owner, moderator |
 | `description` | string, max 500 | owner, moderator |
-| `photo` | `{ fileId }` optional, EXIF stripped | owner, moderator |
-| `reporterContact` | `{ name?, channel?, value? }` optional, only with consent | owner only |
+| `photoId` | uuid FK -> images (private) optional, EXIF stripped | owner, moderator |
+| `contactName`, `contactValue` | optional, only with consent | owner only |
 | `reporterConsent` | `{ acceptedAt, policyVersion }` | none (audit) |
 | `ownerState` | `new` \| `useful` \| `dismissed` | owner |
-| `moderation` | as in Notice | moderator |
+| `hidden`, `hiddenReason`, `hiddenAt` | as in Notice | moderator |
 
-Indexes: `{ noticeId: 1, createdAt: -1 }`. Sightings are never public (PRV-12, OQ-08).
+Indexes: `(notice_id, created_at)`. Sightings are never public (PRV-12, OQ-08).
 
 ### ModerationAction (`moderation_actions`)
-- `targetType` (`notice` \| `sighting`), `targetId`, `action` (`hide` \| `restore` \| `delete`), `reason`, `moderatorId`, `at`. Index `{ targetType, targetId }`.
+- `targetType` (`notice` \| `sighting`), `targetId`, `action` (`hide` \| `restore` \| `delete`), `reason`, `moderatorId`, `at`. Index `(target_type, target_id)`. No FK on `targetId`, so the log survives deletions.
 
 ### Flag (`flags`, 30/11)
 - `targetType`, `targetId`, `reason` enum, `createdAt`. No reporter identity stored.
@@ -184,7 +184,7 @@ Indexes: `{ noticeId: 1, createdAt: -1 }`. Sightings are never public (PRV-12, O
 |---|---|---|---|
 | Unit | Vitest | Shared schemas, pattern checker, status transitions, serializers | Required in CI |
 | Component | Vitest + Testing Library | Forms (labels, errors), loading/empty/error states (NFR-05) | Required in CI |
-| API integration | Supertest + mongodb-memory-server | Each route: happy path, validation, 401/403, public key allowlist, EXIF strip, rate limit | Required in CI |
+| API integration | Supertest against the `petsearch_test` PostgreSQL database | Each route: happy path, validation, 401/403, public key allowlist, EXIF strip, rate limit | Required in CI |
 | E2E | Playwright, viewport 360x800 (plus 412x915) | The 4-step flow as owner and visitor, moderation, account deletion; asserts no horizontal scroll and 44px targets (NFR-01, NFR-02) | Required before merge to main |
 | Accessibility | `@axe-core/playwright` on every route, plus a manual keyboard and screen-reader pass (VoiceOver/TalkBack) | WCAG 2.2 AA, 0 serious or critical violations (NFR-03) | Required before merge to main |
 | Usability | Moderated sessions with the script below | PRC-13 to PRC-17 | Real sessions only (PRC-06) |
@@ -226,11 +226,12 @@ Owner column to be filled by the group (OQ-14, PRC-18, DLV-24). Dates are target
 
 | # | Task | IDs | Acceptance criteria | Target | Owner |
 |---|---|---|---|---|---|
-| T01 | Scaffold the monorepo (web, api, shared), TS strict, ESLint, Prettier, Vitest, Docker Compose for MongoDB, `.env.example`, `.gitignore` | NFR-07, PRV-05, PRC-09 | `npm run lint`, `typecheck`, `test` and `build` pass on an empty app; `docker compose up` starts MongoDB | 06/11 | |
+| T01 | Scaffold the monorepo (web, api, shared), TS strict, ESLint, Prettier, Vitest, `.env.example`, `.gitignore` | NFR-07, PRV-05, PRC-09 | `npm run lint`, `typecheck`, `test` and `build` pass on an empty app | 06/11 | |
+| T01b | PostgreSQL + Drizzle migrations, `Dockerfile`, `docker-compose.yml` (db + app), CI PostgreSQL service | NFR-07, NFR-08 | `docker compose up` serves the app on :3000 with migrations applied | 06/11 | |
 | T02 | GitHub Actions CI and `scripts/check-traceability` | PRC-02, PRC-03, PRC-05, PRC-09 | CI is green; the script fails on a fake unknown ID and on a `verified` row with a missing file (both shown in a test) | 06/11 | |
 | T03 | Shared Zod schemas, enums, neighborhood list, text pattern checker | FR-03 to FR-06, PRV-02 | Unit tests cover valid and invalid cases for each field and pattern | 07/11 | |
 | T04 | API: auth (sign up, sign in, sign out, me), sessions, roles, account deletion | FR-16, PRV-03, PRV-04, PRV-07, PRV-09 | Integration tests: consent required, wrong password, 401/403, deletion cascades | 07/11 | |
-| T05 | API: notices CRUD, image upload pipeline (sharp, GridFS), status and timeline, public serializer | FR-01 to FR-06, FR-14, FR-15, PRV-01, PRV-08, NFR-11 | Tests: EXIF stripped, 1 to 3 photos, public key allowlist, only the owner edits | 08/11 | |
+| T05 | API: notices CRUD, image upload pipeline (sharp, `images` table), status and timeline, public serializer | FR-01 to FR-06, FR-14, FR-15, PRV-01, PRV-08, NFR-11 | Tests: EXIF stripped, 1 to 3 photos, public key allowlist, only the owner edits | 08/11 | |
 | T06 | API: list with filters and pagination, indexes | FR-07 to FR-10 | Tests for each filter and combinations; hidden notices excluded | 08/11 | |
 | T07 | API: sightings and messages, owner inbox, rate limit; moderation hide/restore/delete with log | FR-12, FR-13, FR-17, PRV-09, PRV-12 | Tests: never public, owner-only contact, moderator-only routes | 09/11 | |
 | T08 | Web: app shell, tokens, bottom navigation, layout primitives, loading/empty/error components | NFR-01 to NFR-06, NFR-10 | axe has 0 serious issues on the shell; 360px with no horizontal scroll | 08/11 | |
@@ -238,7 +239,7 @@ Owner column to be filled by the group (OQ-14, PRC-18, DLV-24). Dates are target
 | T10 | Web: auth screens, publish form (3 steps), owner area, status update | FR-01 to FR-06, FR-13 to FR-16, PRV-03 | E2E: full owner flow at 360px | 10/11 | |
 | T11 | Web: sighting form, moderation screen, privacy page, about page, account deletion | FR-12, FR-17, FR-22, PRV-07, PRV-10 | E2E: visitor sighting reaches the owner inbox; deletion works | 10/11 | |
 | T12 | Fictional seed script (Luna plus about 8 others, licensed images) | FR-21, PRV-06, PRV-11, PRC-07 | All seeded notices have `isFictional: true`; asset sources listed | 10/11 | |
-| T13 | Deploy (Render + Atlas M0), HTTPS, environment config, smoke test | NFR-08, PRV-05 | Public URL works on a phone; smoke E2E passes against it | 11/11 | |
+| T13 | Deploy (Docker image on Render + Neon PostgreSQL), HTTPS, environment config, smoke test | NFR-08, PRV-05 | Public URL works on a phone; smoke E2E passes against it | 11/11 | |
 | T14 | Full E2E + a11y + manual keyboard/screen-reader pass; fix issues | NFR-01 to NFR-05 | Reports saved in `docs/evidence/` | 11/11 | |
 | T15 | Usability sessions (at least 3 participants, OQ-13) | PRC-13 to PRC-16 | One filled results file per real session; findings.md | 12-13/11 | |
 | T16 | Adjustments from findings, then quick re-test | PRC-17, DLV-14, DLV-16 | adjustments.md links findings, commits, before/after screenshots | 13-14/11 | |

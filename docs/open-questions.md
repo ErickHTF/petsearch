@@ -34,7 +34,7 @@ Each entry: the question, why it matters, a recommendation, and who decides. "Bl
 - Answer:
 
 ### OQ-12 Hosting accounts and ownership
-- Recommendation: Render (free) + MongoDB Atlas M0, created with a **group** email so access does not depend on one person; credentials shared through a password manager, never in the repo.
+- Recommendation: the app's Docker image on Render (free web service) + Neon (free PostgreSQL), created with a **group** email so access does not depend on one person; credentials shared through a password manager, never in the repo. Check the current free-tier terms before creating accounts (Render's free PostgreSQL has had an expiry period).
 - Decides: group. Blocks: T13.
 - Answer:
 
@@ -48,6 +48,12 @@ Each entry: the question, why it matters, a recommendation, and who decides. "Bl
 - Recommendation: at least 3 participants on 12-13/11 (colleagues, and residents if possible), with verbal consent, no personal data recorded. Invited protectors in the 30/11 round (PRC-16).
 - Decides: group. Blocks: T15.
 - Answer:
+
+## Decided
+
+### OQ-25 Database and runtime
+- The slides propose MongoDB (S p8). Asked on 2026-11-05 whether to change the stack.
+- Answer (project owner, 2026-11-05): keep Node.js and React; **use PostgreSQL instead of MongoDB; run the app in containers**. Recorded in ADR 0001. The Entrega 4 report must mention the change and its reason (DLV-15).
 
 ## Inconsistencies in the sources
 

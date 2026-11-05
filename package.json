@@ -38,9 +38,7 @@
   },
   "allowScripts": {
     "argon2@0.44.0": true,
-    "esbuild@0.28.2": true,
-    "esbuild@0.25.12": true,
     "sharp@0.34.5": true,
-    "mongodb-memory-server@10.4.3": true
+    "esbuild@0.18.20": true
   }
 }

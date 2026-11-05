@@ -17,6 +17,7 @@ Deadlines: Entrega 4 (prototype, tests, adjustments) by **15/11/2026**; final so
 | `docs/requirements.md` | Traceability matrix; the only definition of scope |
 | `docs/plan.md` | Milestones, stack summary, routes, data model, privacy design, tests, ordered tasks |
 | `docs/adr/0001-stack.md` | Stack decision |
+| `docs/api.md` | HTTP API contract between web and API |
 | `docs/open-questions.md` | Pending decisions with recommendations |
 | `docs/entrega-4/outline.md` | Skeleton of the Entrega 4 report (pt-BR) |
 | `docs/evidence/README.md` | Evidence conventions |

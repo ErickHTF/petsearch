@@ -57,7 +57,7 @@ Single source of truth for scope. Anything not listed here is out of scope until
 | NFR-04 | Layout respects safe areas (notch, home indicator) | K 4.7 | non-functional | Should | planned | CSS `env(safe-area-inset-*)` review; device screenshot | planned: screenshot |
 | NFR-05 | Every data screen has designed loading, empty and error states | K 4.7 | non-functional | Must | planned | Component tests for each state | planned: test log |
 | NFR-06 | All UI text in pt-BR | K 3 | non-functional | Must | planned | Review of the UI string catalog | planned: screenshot |
-| NFR-07 | Stack: React + TypeScript frontend, Node.js API, MongoDB database | S p8 ("Arquitetura candidata"); R p5 | non-functional | Must | planned | ADR 0001; repo structure | planned: docs/adr/0001-stack.md |
+| NFR-07 | Stack: React + TypeScript frontend, Node.js API, PostgreSQL database (slides proposed MongoDB; changed by owner decision, OQ-25), app runs in containers | S p8 ("Arquitetura candidata"); R p5; OQ-25 | non-functional | Must | in-progress | ADR 0001; repo structure; `docker compose up` | planned: docs/adr/0001-stack.md |
 | NFR-08 | Hosted at zero or low cost; hosting responsibility documented | S p10 ("Hospedagem"); K 3 | non-functional | Must | planned | Public URL reachable; plan.md hosting section | planned: screenshot of deployed app |
 | NFR-09 | Installable PWA (manifest, icons, app-shell caching) | K 3 | non-functional | Should | planned | Lighthouse PWA installability check | planned: Lighthouse report |
 | NFR-10 | Visual identity derived from the slide deck (green and navy) and confirmed by the project owner | K 1; S p1-p12 (palette); OQ-05 | non-functional | Should | planned | Owner approval recorded in OQ-05 | planned |
