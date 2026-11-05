@@ -1,1 +1,193 @@
 @import 'tailwindcss';
+
+/*
+ * Design tokens (NFR-10, pending owner confirmation in OQ-05).
+ * Contrast on white: navy 11.6:1, muted 7.5:1, primary (white text) 6.5:1, danger 6.6:1.
+ * The bright green accent (3.2:1) is only used for non-text decoration (NFR-03).
+ */
+@theme {
+  --color-navy: #1f3864;
+  --color-ink: #1a2433;
+  --color-muted: #4a5568;
+  --color-line: #6b7785;
+  --color-line-soft: #d5dbe1;
+  --color-canvas: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-primary: #146c3c;
+  --color-primary-strong: #0f5530;
+  --color-accent: #00a651;
+  --color-navy-soft: #e8edf5;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-warning-ink: #7a4b00;
+  --color-warning-soft: #fff4d6;
+  --color-success-ink: #14532d;
+  --color-success-soft: #e3f4ea;
+  --color-focus: #1d4ed8;
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--color-navy);
+  line-height: 1.25;
+}
+
+a {
+  color: var(--color-navy);
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Visible focus on every interactive element (NFR-03). */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Buttons and button-like links: at least 44x44px (NFR-02). */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.625rem 1rem;
+  border-radius: 0.625rem;
+  border: 2px solid transparent;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-strong);
+}
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-navy);
+  border-color: var(--color-navy);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-navy-soft);
+}
+.btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--color-navy);
+  text-decoration: underline;
+}
+.btn-block {
+  width: 100%;
+}
+
+/* Form controls (NFR-02, NFR-03). */
+.input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+.input[aria-invalid='true'] {
+  border: 2px solid var(--color-danger);
+}
+textarea.input {
+  min-height: 6rem;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+.choice input {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  accent-color: var(--color-primary);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-soft);
+  border-radius: 0.75rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* Bottom navigation respects the home indicator and notch (NFR-04). */
+.bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.app-header {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.app-main {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
