@@ -8,6 +8,22 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: petsearch
+          POSTGRES_PASSWORD: petsearch
+          POSTGRES_DB: petsearch_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U petsearch"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgres://petsearch:petsearch@localhost:5432/petsearch_test
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,3 +42,5 @@ jobs:
         run: npm run check:trace
         env:
           TRACE_BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || 'HEAD~1' }}
+      - name: Docker image builds
+        run: docker build -t petsearch:ci .
