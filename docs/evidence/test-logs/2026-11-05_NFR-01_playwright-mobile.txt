@@ -1,0 +1,33 @@
+Date: 2026-11-05
+Commit: 901bb87e38f25779b588fd0456e748b14136b8da
+Command: npx playwright test
+
+
+Running 20 tests using 1 worker
+
+(node:69568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [mobile-360] › e2e/flows.spec.ts:6:1 › owner publishes, resident finds it and sends a sighting, owner updates the case (FR-01 to FR-14) (2.7s)
+  ✓   2 [mobile-360] › e2e/flows.spec.ts:85:1 › free text with a phone number is blocked before publishing (PRV-02) (500ms)
+  ✓   3 [mobile-360] › e2e/flows.spec.ts:93:1 › every seeded notice is labeled as fictional (FR-21) (229ms)
+  ✓   4 [mobile-360] › e2e/flows.spec.ts:105:1 › a moderator hides a notice and it leaves the public list (FR-17) (902ms)
+  ✓   5 [mobile-360] › e2e/flows.spec.ts:133:1 › a person deletes their account and can no longer sign in (PRV-07) (609ms)
+  ✓   6 [mobile-360] › e2e/quality.spec.ts:26:1 › public screens (7.9s)
+  ✓   7 [mobile-360] › e2e/quality.spec.ts:50:1 › filter panel open (1.2s)
+  ✓   8 [mobile-360] › e2e/quality.spec.ts:59:1 › owner screens (3.2s)
+  ✓   9 [mobile-360] › e2e/quality.spec.ts:73:1 › publish form steps 2 and 3 (1.9s)
+  ✓  10 [mobile-360] › e2e/quality.spec.ts:99:1 › moderation screen (1.4s)
+(node:69651) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [mobile-412] › e2e/flows.spec.ts:6:1 › owner publishes, resident finds it and sends a sighting, owner updates the case (FR-01 to FR-14) (1.9s)
+  ✓  12 [mobile-412] › e2e/flows.spec.ts:85:1 › free text with a phone number is blocked before publishing (PRV-02) (508ms)
+  ✓  13 [mobile-412] › e2e/flows.spec.ts:93:1 › every seeded notice is labeled as fictional (FR-21) (224ms)
+  ✓  14 [mobile-412] › e2e/flows.spec.ts:105:1 › a moderator hides a notice and it leaves the public list (FR-17) (891ms)
+  ✓  15 [mobile-412] › e2e/flows.spec.ts:133:1 › a person deletes their account and can no longer sign in (PRV-07) (583ms)
+  ✓  16 [mobile-412] › e2e/quality.spec.ts:26:1 › public screens (7.4s)
+  ✓  17 [mobile-412] › e2e/quality.spec.ts:50:1 › filter panel open (1.1s)
+  ✓  18 [mobile-412] › e2e/quality.spec.ts:59:1 › owner screens (3.0s)
+  ✓  19 [mobile-412] › e2e/quality.spec.ts:73:1 › publish form steps 2 and 3 (1.6s)
+  ✓  20 [mobile-412] › e2e/quality.spec.ts:99:1 › moderation screen (1.3s)
+
+  20 passed (42.9s)

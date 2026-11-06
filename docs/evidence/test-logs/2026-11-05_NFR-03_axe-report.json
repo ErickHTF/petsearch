@@ -1,0 +1,325 @@
+{
+  "commit": "901bb87e38f25779b588fd0456e748b14136b8da",
+  "checks": [
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/",
+      "violations": [],
+      "passes": 20,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/avisos",
+      "violations": [],
+      "passes": 21,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/avisos/7b2a494e-1a48-4132-a13b-fc1095f057db",
+      "violations": [],
+      "passes": 22,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/avisos/7b2a494e-1a48-4132-a13b-fc1095f057db/avistamento",
+      "violations": [],
+      "passes": 25,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/entrar",
+      "violations": [],
+      "passes": 23,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/cadastrar",
+      "violations": [],
+      "passes": 24,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/sobre",
+      "violations": [],
+      "passes": 18,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/privacidade",
+      "violations": [],
+      "passes": 18,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/pagina-que-nao-existe",
+      "violations": [],
+      "passes": 17,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/avisos",
+      "violations": [],
+      "passes": 24,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/minha-conta",
+      "violations": [],
+      "passes": 20,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/avisos/novo",
+      "violations": [],
+      "passes": 24,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/minha-conta/avisos/7b2a494e-1a48-4132-a13b-fc1095f057db",
+      "violations": [],
+      "passes": 26,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/avisos/novo",
+      "violations": [],
+      "passes": 23,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/avisos/novo",
+      "violations": [],
+      "passes": 25,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "url": "http://localhost:3100/moderacao",
+      "violations": [],
+      "passes": 26,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/",
+      "violations": [],
+      "passes": 20,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/avisos",
+      "violations": [],
+      "passes": 21,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/avisos/7b2a494e-1a48-4132-a13b-fc1095f057db",
+      "violations": [],
+      "passes": 22,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/avisos/7b2a494e-1a48-4132-a13b-fc1095f057db/avistamento",
+      "violations": [],
+      "passes": 25,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/entrar",
+      "violations": [],
+      "passes": 23,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/cadastrar",
+      "violations": [],
+      "passes": 24,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/sobre",
+      "violations": [],
+      "passes": 18,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/privacidade",
+      "violations": [],
+      "passes": 18,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/pagina-que-nao-existe",
+      "violations": [],
+      "passes": 17,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/avisos",
+      "violations": [],
+      "passes": 24,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/minha-conta",
+      "violations": [],
+      "passes": 20,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/avisos/novo",
+      "violations": [],
+      "passes": 24,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/minha-conta/avisos/7b2a494e-1a48-4132-a13b-fc1095f057db",
+      "violations": [],
+      "passes": 26,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/avisos/novo",
+      "violations": [],
+      "passes": 23,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/avisos/novo",
+      "violations": [],
+      "passes": 25,
+      "incomplete": 0
+    },
+    {
+      "viewport": {
+        "width": 412,
+        "height": 915
+      },
+      "url": "http://localhost:3100/moderacao",
+      "violations": [],
+      "passes": 26,
+      "incomplete": 0
+    }
+  ]
+}
