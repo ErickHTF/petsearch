@@ -207,7 +207,15 @@ export function SightingForm() {
           </div>
 
           <CheckboxField
-            label="Autorizo o uso destas informações para ajudar a encontrar o animal, conforme a política de privacidade."
+            label={
+              <>
+                Autorizo o uso destas informações para ajudar a encontrar o animal, conforme a{' '}
+                <Link to="/privacidade" className="underline underline-offset-2">
+                  política de privacidade
+                </Link>
+                .
+              </>
+            }
             error={errors.consent?.message}
             {...register('consent')}
           />

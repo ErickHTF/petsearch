@@ -140,7 +140,12 @@ export function SignUp() {
             label={
               <>
                 Li e concordo com a{' '}
-                <Link to="/privacidade" target="_blank" rel="noopener">
+                <Link
+                  to="/privacidade"
+                  target="_blank"
+                  rel="noopener"
+                  className="underline underline-offset-2"
+                >
                   política de privacidade
                 </Link>{' '}
                 e autorizo o uso dos meus dados para usar o PETSEARCH.

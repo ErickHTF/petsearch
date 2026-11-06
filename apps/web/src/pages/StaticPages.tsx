@@ -85,8 +85,10 @@ export function Privacy() {
       <Section title="Seus direitos">
         <p>
           Você pode editar ou excluir seus avisos a qualquer momento e excluir sua conta em{' '}
-          <Link to="/minha-conta">Minha conta</Link>. Para outros pedidos previstos no art. 18 da
-          LGPD, use o canal de contato abaixo.
+          <Link to="/minha-conta" className="underline underline-offset-2">
+            Minha conta
+          </Link>
+          . Para outros pedidos previstos no art. 18 da LGPD, use o canal de contato abaixo.
         </p>
         <p className="rounded-lg bg-warning-soft p-3 text-warning-ink">
           Canal de contato para pedidos de privacidade: em definição pelo grupo.
@@ -137,7 +139,10 @@ export function About() {
       <Section title="Privacidade">
         <p>
           O contato de quem publica é protegido e mostramos só o bairro.{' '}
-          <Link to="/privacidade">Leia a política de privacidade</Link>.
+          <Link to="/privacidade" className="underline underline-offset-2">
+            Leia a política de privacidade
+          </Link>
+          .
         </p>
       </Section>
     </article>

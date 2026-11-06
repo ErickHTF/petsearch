@@ -1,6 +1,6 @@
 // Three-step publish form (FR-01 to FR-06, FR-15, PRV-02, PRV-03).
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { FormProvider, useForm, type FieldPath } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
@@ -260,7 +260,15 @@ export function NewNotice() {
               />
               <Review values={watch()} photos={photos.length} />
               <CheckboxField
-                label="Autorizo a publicação das fotos e dos dados deste aviso no PETSEARCH, conforme a política de privacidade."
+                label={
+                  <>
+                    Autorizo a publicação das fotos e dos dados deste aviso no PETSEARCH, conforme a{' '}
+                    <Link to="/privacidade" className="underline underline-offset-2">
+                      política de privacidade
+                    </Link>
+                    .
+                  </>
+                }
                 error={formState.errors.consent?.message}
                 {...register('consent')}
               />
