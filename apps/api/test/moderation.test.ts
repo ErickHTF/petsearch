@@ -29,6 +29,23 @@ describe('moderation (FR-17)', () => {
     expect((await moderator.get('/api/moderation/items')).status).toBe(403);
   });
 
+  it('makes caches revalidate public photos so hiding applies at once', async () => {
+    const { app, notice, moderator } = await setup();
+    const url = `/api/images/${notice.photos[0]!.id}`;
+    const first = await request(app).get(url);
+    expect(first.headers['cache-control']).toBe('public, no-cache');
+    expect(first.headers.etag).toBeTruthy();
+    const again = await request(app).get(url).set('If-None-Match', first.headers.etag!);
+    expect(again.status).toBe(304);
+
+    await moderator
+      .post(`/api/moderation/notice/${notice.id}`)
+      .send({ action: 'hide', reason: 'Conteúdo de teste' });
+    expect((await request(app).get(url).set('If-None-Match', first.headers.etag!)).status).toBe(
+      404,
+    );
+  });
+
   it('hides and restores a notice with an audit log', async () => {
     const { app, owner, notice, moderator } = await setup();
     const hide = await moderator

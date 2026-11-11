@@ -31,7 +31,9 @@ export function imagesRouter() {
     if (!isPublic && !isOwner && !isModerator) throw notFound();
 
     res.set('Content-Type', 'image/webp');
-    res.set('Cache-Control', isPublic ? 'public, max-age=86400' : 'private, no-store');
+    // Public photos revalidate on every view (cheap 304 via ETag), so a notice that moderation
+    // hides or its owner deletes stops showing at once instead of after a day in caches (FR-17).
+    res.set('Cache-Control', isPublic ? 'public, no-cache' : 'private, no-store');
     res.set('X-Content-Type-Options', 'nosniff');
     res.send(row.content);
   });
