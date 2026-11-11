@@ -25,7 +25,6 @@ services:
     environment:
       DATABASE_URL: postgres://petsearch:petsearch@db:5432/petsearch
       SESSION_SECRET: ${SESSION_SECRET:-dev-only-secret-change-me}
-      MODERATOR_EMAILS: ${MODERATOR_EMAILS:-}
       # Local compose runs over plain HTTP; production keeps secure cookies.
       COOKIE_SECURE: 'false'
     ports:

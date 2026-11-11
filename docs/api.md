@@ -59,7 +59,7 @@ Every non-2xx response has the body `ApiError`: `{ error: string, fields?: Recor
 | GET | `/moderation/items?targetType=notice\|sighting` | - | `200 ModerationItem[]` (latest 50, including hidden) |
 | POST | `/moderation/:targetType/:id` | `ModerationActionInput` (`{ action: 'hide' \| 'restore' \| 'delete', reason }`) | `204` |
 
-Moderator role is granted at sign-up to emails listed in `MODERATOR_EMAILS`.
+Sign-up always creates an `owner`. An operator grants or revokes the moderator role on an existing account with `npm run moderator -- <email> [--revoke]` (in the container: `node apps/api/dist/admin/moderator.js`); the change applies to open sessions on their next request.
 
 ## Health
 

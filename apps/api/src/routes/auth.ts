@@ -26,7 +26,7 @@ function destroy(req: Request) {
   );
 }
 
-export function authRouter(options: { moderatorEmails: string[]; limiter: RequestHandler }) {
+export function authRouter(options: { limiter: RequestHandler }) {
   const router = Router();
 
   router.post('/auth/sign-up', options.limiter, async (req, res) => {
@@ -46,7 +46,6 @@ export function authRouter(options: { moderatorEmails: string[]; limiter: Reques
         email: input.email,
         passwordHash: await argon2.hash(input.password, { type: argon2.argon2id }),
         displayName: input.displayName,
-        role: options.moderatorEmails.includes(input.email) ? 'moderator' : 'owner',
         consentAcceptedAt: new Date(),
         consentPolicyVersion: PRIVACY_POLICY_VERSION,
       })

@@ -12,7 +12,6 @@ const app = createApp({
   sessionSecret: config.sessionSecret,
   cookieSecure: config.cookieSecure,
   trustProxy: config.isProduction,
-  moderatorEmails: config.moderatorEmails,
   webDistDir: config.webDistDir ?? fileURLToPath(new URL('../../web/dist', import.meta.url)),
 });
 

@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { db } from '../src/db/client.ts';
 import { moderationActions, users } from '../src/db/schema.ts';
-import { createNotice, makeApp, sendSighting, signUp } from './helpers.ts';
+import { createNotice, makeApp, sendSighting, signUp, signUpModerator } from './helpers.ts';
 
 async function setup() {
   const app = makeApp();
@@ -11,7 +11,7 @@ async function setup() {
   await signUp(owner);
   const notice = await createNotice(owner);
   const moderator = request.agent(app);
-  await signUp(moderator, 'mod@exemplo.test');
+  await signUpModerator(moderator);
   return { app, owner, notice, moderator };
 }
 

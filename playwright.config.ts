@@ -35,7 +35,6 @@ export default defineConfig({
       PORT: String(PORT),
       SESSION_SECRET: 'e2e-only-secret',
       COOKIE_SECURE: 'false',
-      MODERATOR_EMAILS: '',
       SEED_PASSWORD: 'senha-demo-123',
     },
   },

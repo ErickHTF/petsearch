@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { count, eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
+import { setRole } from '../src/admin/roles.ts';
 import { db } from '../src/db/client.ts';
 import { images, notices, users } from '../src/db/schema.ts';
 import { createNotice, makeApp, signUp } from './helpers.ts';
@@ -71,9 +72,21 @@ describe('auth and account (FR-16, PRV-03, PRV-04, PRV-07)', () => {
     expect(ok.status).toBe(200);
   });
 
-  it('grants the moderator role to configured emails', async () => {
-    const user = await signUp(request.agent(makeApp()), 'mod@exemplo.test');
-    expect(user.role).toBe('moderator');
+  it('never grants the moderator role at sign-up (FR-17)', async () => {
+    const agent = request.agent(makeApp());
+    const user = await signUp(agent, 'mod@exemplo.test');
+    expect(user.role).toBe('owner');
+    expect((await agent.get('/api/moderation/items')).status).toBe(403);
+  });
+
+  it('lets an operator grant and revoke the moderator role (FR-17)', async () => {
+    const agent = request.agent(makeApp());
+    await signUp(agent, 'mod@exemplo.test');
+    expect(await setRole(' MOD@exemplo.test ', 'moderator')).toBe(true);
+    expect((await agent.get('/api/auth/me')).body.user.role).toBe('moderator');
+    expect(await setRole('mod@exemplo.test', 'owner')).toBe(true);
+    expect((await agent.get('/api/moderation/items')).status).toBe(403);
+    expect(await setRole('ninguem@exemplo.test', 'moderator')).toBe(false);
   });
 
   it('rate limits sign-in attempts', async () => {

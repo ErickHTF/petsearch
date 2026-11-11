@@ -1,13 +1,13 @@
 import sharp from 'sharp';
 import request from 'supertest';
 import type { NoticeInput, OwnerNotice } from '@petsearch/shared';
+import { setRole } from '../src/admin/roles.ts';
 import { createApp } from '../src/app.ts';
 
 export function makeApp(rateLimits = { auth: 1000, sightings: 1000 }) {
   return createApp({
     sessionSecret: 'test-secret',
     cookieSecure: false,
-    moderatorEmails: ['mod@exemplo.test'],
     rateLimits,
   });
 }
@@ -21,6 +21,13 @@ export async function signUp(agent: Agent, email = 'ana@exemplo.test') {
   if (res.status !== 201)
     throw new Error(`sign-up failed: ${res.status} ${JSON.stringify(res.body)}`);
   return res.body as { id: string; role: string };
+}
+
+/** Signs up and then grants the role the way an operator would (FR-17). */
+export async function signUpModerator(agent: Agent, email = 'mod@exemplo.test') {
+  const user = await signUp(agent, email);
+  await setRole(email, 'moderator');
+  return user;
 }
 
 /** A generated test image (no real photo). `exif` embeds metadata to prove it gets stripped. */

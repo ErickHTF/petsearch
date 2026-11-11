@@ -32,6 +32,13 @@ O seed local cria avisos fictícios e estas contas (senha das duas: `senha-demo-
 Use apenas esses dados fictícios no ambiente de demonstração. O aviso da Luna também é
 fictício.
 
+## Moderação
+
+O cadastro sempre cria uma conta comum. Para dar ou retirar o papel de moderação de uma conta
+que já existe, rode `npm run moderator -- email@dominio [--revoke]` (no container:
+`docker compose exec app node apps/api/dist/admin/moderator.js email@dominio`). Confirme quem é
+a pessoa antes de liberar o acesso.
+
 ## Verificações
 
 ```sh

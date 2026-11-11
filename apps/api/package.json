@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "seed": "tsx --env-file-if-exists=../../.env src/seed/run.ts",
+    "moderator": "tsx --env-file-if-exists=../../.env src/admin/moderator.ts",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

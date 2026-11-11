@@ -19,7 +19,6 @@ export interface AppOptions {
   sessionSecret: string;
   cookieSecure: boolean;
   trustProxy?: boolean;
-  moderatorEmails?: string[];
   rateLimits?: RateLimits;
   webDistDir?: string;
 }
@@ -63,7 +62,7 @@ export function createApp(options: AppOptions) {
   api.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
   });
-  api.use(authRouter({ moderatorEmails: options.moderatorEmails ?? [], limiter: limiters.auth }));
+  api.use(authRouter({ limiter: limiters.auth }));
   api.use(noticesRouter());
   api.use(sightingsRouter({ limiter: limiters.sightings }));
   api.use(meRouter());
