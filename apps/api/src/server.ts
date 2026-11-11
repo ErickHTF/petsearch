@@ -4,14 +4,14 @@ import { config } from './config.ts';
 import { connectDb, runMigrations } from './db/client.ts';
 import { scheduleRetention } from './lib/retention.ts';
 
-connectDb(config.databaseUrl);
+connectDb(config.databaseUrl, config.databasePoolMax);
 await runMigrations();
 scheduleRetention();
 
 const app = createApp({
   sessionSecret: config.sessionSecret,
   cookieSecure: config.cookieSecure,
-  trustProxy: config.isProduction,
+  trustProxy: config.trustProxy,
   webDistDir: config.webDistDir ?? fileURLToPath(new URL('../../web/dist', import.meta.url)),
 });
 

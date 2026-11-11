@@ -24,9 +24,11 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgres://petsearch:petsearch@db:5432/petsearch
-      SESSION_SECRET: ${SESSION_SECRET:-dev-only-secret-change-me}
+      SESSION_SECRET: ${SESSION_SECRET:-dev-only-secret-change-me-0123456789}
       # Local compose runs over plain HTTP; production keeps secure cookies.
       COOKIE_SECURE: 'false'
+      # Clients reach the container directly, with no proxy in front.
+      TRUST_PROXY: '0'
     ports:
       - '3000:3000'
 

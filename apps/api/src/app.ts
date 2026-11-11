@@ -18,7 +18,8 @@ import { imagesRouter } from './routes/images.ts';
 export interface AppOptions {
   sessionSecret: string;
   cookieSecure: boolean;
-  trustProxy?: boolean;
+  /** Number of reverse proxies in front of the app (Express `trust proxy`). */
+  trustProxy?: number;
   rateLimits?: RateLimits;
   webDistDir?: string;
 }
@@ -28,7 +29,7 @@ const PgStore = connectPgSimple(session);
 export function createApp(options: AppOptions) {
   const app = express();
   app.disable('x-powered-by');
-  if (options.trustProxy) app.set('trust proxy', 1);
+  if (options.trustProxy) app.set('trust proxy', options.trustProxy);
 
   app.use(
     helmet({

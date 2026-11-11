@@ -10,8 +10,8 @@ export type Database = NodePgDatabase<typeof schema>;
 let pool: pg.Pool | undefined;
 let database: Database | undefined;
 
-export function connectDb(url: string): Database {
-  pool = new pg.Pool({ connectionString: url, max: 10 });
+export function connectDb(url: string, max = 10): Database {
+  pool = new pg.Pool({ connectionString: url, max });
   database = drizzle(pool, { schema });
   return database;
 }
