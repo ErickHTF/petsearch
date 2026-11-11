@@ -31,15 +31,7 @@ export function authRouter(options: { limiter: RequestHandler }) {
 
   router.post('/auth/sign-up', options.limiter, async (req, res) => {
     const input = parse(signUpSchema, req.body);
-    const [existing] = await db()
-      .select({ id: users.id })
-      .from(users)
-      .where(eq(users.email, input.email));
-    if (existing) {
-      throw new HttpError(409, 'Este e-mail já está cadastrado.', {
-        email: 'Este e-mail já está cadastrado.',
-      });
-    }
+    // ON CONFLICT instead of a prior lookup, so two simultaneous sign-ups cannot both pass.
     const [user] = await db()
       .insert(users)
       .values({
@@ -49,10 +41,16 @@ export function authRouter(options: { limiter: RequestHandler }) {
         consentAcceptedAt: new Date(),
         consentPolicyVersion: PRIVACY_POLICY_VERSION,
       })
+      .onConflictDoNothing({ target: users.email })
       .returning();
+    if (!user) {
+      throw new HttpError(409, 'Este e-mail já está cadastrado.', {
+        email: 'Este e-mail já está cadastrado.',
+      });
+    }
     await regenerate(req);
-    req.session.userId = user!.id;
-    res.status(201).json(toSessionUser(user!));
+    req.session.userId = user.id;
+    res.status(201).json(toSessionUser(user));
   });
 
   router.post('/auth/sign-in', options.limiter, async (req, res) => {

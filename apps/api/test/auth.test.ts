@@ -54,6 +54,20 @@ describe('auth and account (FR-16, PRV-03, PRV-04, PRV-07)', () => {
     expect(res.status).toBe(409);
   });
 
+  it('answers 409, not 500, to simultaneous sign-ups with the same email (FR-16)', async () => {
+    const app = makeApp();
+    const body = {
+      displayName: 'Ana',
+      email: 'ana@exemplo.test',
+      password: 'senha-de-teste',
+      consent: true,
+    };
+    const results = await Promise.all(
+      [1, 2, 3].map(() => request(app).post('/api/auth/sign-up').send(body)),
+    );
+    expect(results.map((res) => res.status).sort()).toEqual([201, 409, 409]);
+  });
+
   it('signs in with the right password only', async () => {
     const app = makeApp();
     await signUp(request.agent(app));
