@@ -53,7 +53,6 @@ export function authRouter(options: { moderatorEmails: string[]; limiter: Reques
       .returning();
     await regenerate(req);
     req.session.userId = user!.id;
-    req.session.role = user!.role;
     res.status(201).json(toSessionUser(user!));
   });
 
@@ -66,7 +65,6 @@ export function authRouter(options: { moderatorEmails: string[]; limiter: Reques
     if (!user || !valid) throw new HttpError(401, 'E-mail ou senha incorretos.');
     await regenerate(req);
     req.session.userId = user.id;
-    req.session.role = user.role;
     res.json(toSessionUser(user));
   });
 

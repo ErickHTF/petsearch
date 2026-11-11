@@ -6,7 +6,7 @@ import session from 'express-session';
 import helmet from 'helmet';
 import { dbPool } from './db/client.ts';
 import { notFoundHandler, errorHandler } from './lib/errors.ts';
-import { sameOriginWrites } from './lib/auth.ts';
+import { loadUser, sameOriginWrites } from './lib/auth.ts';
 import { createLimiters, DEFAULT_RATE_LIMITS, type RateLimits } from './lib/rate-limit.ts';
 import { authRouter, SESSION_COOKIE } from './routes/auth.ts';
 import { noticesRouter } from './routes/notices.ts';
@@ -59,6 +59,7 @@ export function createApp(options: AppOptions) {
   const limiters = createLimiters(options.rateLimits ?? DEFAULT_RATE_LIMITS);
   const api = Router();
   api.use(sameOriginWrites);
+  api.use(loadUser);
   api.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
   });

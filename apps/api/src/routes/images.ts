@@ -22,8 +22,8 @@ export function imagesRouter() {
       .where(eq(images.id, uuidParam(req.params.id)));
     if (!row) throw notFound();
 
-    const isOwner = row.ownerId === req.session.userId;
-    const isModerator = req.session.role === 'moderator';
+    const isOwner = row.ownerId === req.user?.id;
+    const isModerator = req.user?.role === 'moderator';
     const isPublic = row.visibility === 'public' && !row.noticeHidden;
     if (!isPublic && !isOwner && !isModerator) throw notFound();
 

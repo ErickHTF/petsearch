@@ -1,8 +1,8 @@
 import request from 'supertest';
-import { count } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { db } from '../src/db/client.ts';
-import { images, notices } from '../src/db/schema.ts';
+import { images, notices, users } from '../src/db/schema.ts';
 import { createNotice, makeApp, signUp } from './helpers.ts';
 
 describe('auth and account (FR-16, PRV-03, PRV-04, PRV-07)', () => {
@@ -102,6 +102,14 @@ describe('auth and account (FR-16, PRV-03, PRV-04, PRV-07)', () => {
     const [i] = await db().select({ n: count() }).from(images);
     expect(n!.n).toBe(0);
     expect(i!.n).toBe(0);
+    expect((await agent.get('/api/auth/me')).body.user).toBeNull();
+  });
+
+  it('treats a session whose user no longer exists as signed out (PRV-04)', async () => {
+    const agent = request.agent(makeApp());
+    const user = await signUp(agent);
+    await db().delete(users).where(eq(users.id, user.id));
+    expect((await agent.get('/api/me/notices')).status).toBe(401);
     expect((await agent.get('/api/auth/me')).body.user).toBeNull();
   });
 

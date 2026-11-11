@@ -1,7 +1,8 @@
 import request from 'supertest';
+import { eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { db } from '../src/db/client.ts';
-import { moderationActions } from '../src/db/schema.ts';
+import { moderationActions, users } from '../src/db/schema.ts';
 import { createNotice, makeApp, sendSighting, signUp } from './helpers.ts';
 
 async function setup() {
@@ -19,6 +20,13 @@ describe('moderation (FR-17)', () => {
     const { app, owner } = await setup();
     expect((await request(app).get('/api/moderation/items')).status).toBe(401);
     expect((await owner.get('/api/moderation/items')).status).toBe(403);
+  });
+
+  it('drops moderation access as soon as the role is revoked (PRV-04)', async () => {
+    const { moderator } = await setup();
+    expect((await moderator.get('/api/moderation/items')).status).toBe(200);
+    await db().update(users).set({ role: 'owner' }).where(eq(users.email, 'mod@exemplo.test'));
+    expect((await moderator.get('/api/moderation/items')).status).toBe(403);
   });
 
   it('hides and restores a notice with an audit log', async () => {
