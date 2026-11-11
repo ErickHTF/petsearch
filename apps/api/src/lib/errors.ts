@@ -56,6 +56,6 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     res.status(400).json({ error: 'Requisição inválida.' });
     return;
   }
-  console.error(err);
+  console.error(`Request ${res.locals.requestId ?? '-'} failed`, err);
   res.status(500).json({ error: 'Erro inesperado. Tente novamente.' });
 };

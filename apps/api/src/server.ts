@@ -12,6 +12,7 @@ const app = createApp({
   sessionSecret: config.sessionSecret,
   cookieSecure: config.cookieSecure,
   trustProxy: config.trustProxy,
+  requestLog: true,
   webDistDir: config.webDistDir ?? fileURLToPath(new URL('../../web/dist', import.meta.url)),
 });
 

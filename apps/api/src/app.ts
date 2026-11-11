@@ -8,6 +8,7 @@ import { dbPool } from './db/client.ts';
 import { notFoundHandler, errorHandler } from './lib/errors.ts';
 import { loadUser, sameOriginWrites } from './lib/auth.ts';
 import { createLimiters, DEFAULT_RATE_LIMITS, type RateLimits } from './lib/rate-limit.ts';
+import { requestLog } from './lib/request-log.ts';
 import { authRouter, SESSION_COOKIE } from './routes/auth.ts';
 import { noticesRouter } from './routes/notices.ts';
 import { meRouter } from './routes/me.ts';
@@ -22,6 +23,8 @@ export interface AppOptions {
   trustProxy?: number;
   rateLimits?: RateLimits;
   webDistDir?: string;
+  /** Logs one line per API request; off in tests. */
+  requestLog?: boolean;
 }
 
 const PgStore = connectPgSimple(session);
@@ -58,6 +61,7 @@ export function createApp(options: AppOptions) {
 
   const limiters = createLimiters(options.rateLimits ?? DEFAULT_RATE_LIMITS);
   const api = Router();
+  if (options.requestLog) api.use(requestLog);
   api.use(sameOriginWrites);
   api.use(loadUser);
   api.get('/health', (_req, res) => {
