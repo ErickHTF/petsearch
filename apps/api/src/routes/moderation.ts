@@ -11,18 +11,35 @@ import { requireModerator } from '../lib/auth.ts';
 import { toModerationNotice, toModerationSighting } from '../lib/serializers.ts';
 
 const targetSchema = z.enum(MODERATION_TARGETS);
+const queueSchema = z.object({
+  targetType: targetSchema.default('notice'),
+  page: z.coerce.number().int().min(1).max(1000).default(1),
+});
+
+export const QUEUE_PAGE_SIZE = 50;
 
 export function moderationRouter() {
   const router = Router();
   router.use('/moderation', requireModerator);
 
   router.get('/moderation/items', async (req, res) => {
-    const targetType = parse(targetSchema.default('notice'), req.query.targetType);
+    const { targetType, page } = parse(queueSchema, req.query);
+    const offset = (page - 1) * QUEUE_PAGE_SIZE;
     if (targetType === 'notice') {
-      const rows = await db().select().from(notices).orderBy(desc(notices.createdAt)).limit(50);
+      const rows = await db()
+        .select()
+        .from(notices)
+        .orderBy(desc(notices.createdAt), desc(notices.id))
+        .limit(QUEUE_PAGE_SIZE)
+        .offset(offset);
       res.json(rows.map(toModerationNotice));
     } else {
-      const rows = await db().select().from(sightings).orderBy(desc(sightings.createdAt)).limit(50);
+      const rows = await db()
+        .select()
+        .from(sightings)
+        .orderBy(desc(sightings.createdAt), desc(sightings.id))
+        .limit(QUEUE_PAGE_SIZE)
+        .offset(offset);
       res.json(rows.map(toModerationSighting));
     }
   });

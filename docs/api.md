@@ -56,7 +56,7 @@ Every non-2xx response has the body `ApiError`: `{ error: string, fields?: Recor
 
 | Method | Path | Body | Response |
 |---|---|---|---|
-| GET | `/moderation/items?targetType=notice\|sighting` | - | `200 ModerationItem[]` (latest 50, including hidden) |
+| GET | `/moderation/items?targetType=notice\|sighting&page=1` | - | `200 ModerationItem[]` (50 per page, newest first, including hidden; an empty page means the end) |
 | POST | `/moderation/:targetType/:id` | `ModerationActionInput` (`{ action: 'hide' \| 'restore' \| 'delete', reason }`) | `204` |
 
 Sign-up always creates an `owner`. An operator grants or revokes the moderator role on an existing account with `npm run moderator -- <email> [--revoke]` (in the container: `node apps/api/dist/admin/moderator.js`); the change applies to open sessions on their next request.

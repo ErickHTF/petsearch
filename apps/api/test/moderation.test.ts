@@ -91,6 +91,18 @@ describe('moderation (FR-17)', () => {
     expect((await moderator.get('/api/moderation/items?targetType=sighting')).body).toEqual([]);
   });
 
+  it('pages through the queue beyond the latest 50 items', async () => {
+    const { app, notice, moderator } = await setup();
+    await Promise.all(Array.from({ length: 51 }, () => sendSighting(request(app), notice.id)));
+    const first = await moderator.get('/api/moderation/items?targetType=sighting');
+    const second = await moderator.get('/api/moderation/items?targetType=sighting&page=2');
+    expect(first.body).toHaveLength(50);
+    expect(second.body).toHaveLength(1);
+    const ids = new Set([...first.body, ...second.body].map((item: { id: string }) => item.id));
+    expect(ids.size).toBe(51);
+    expect((await moderator.get('/api/moderation/items?page=0')).status).toBe(400);
+  });
+
   it('requires a reason and a known target', async () => {
     const { notice, moderator } = await setup();
     expect(
