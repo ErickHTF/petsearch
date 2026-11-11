@@ -74,7 +74,7 @@ describe('sightings and messages (FR-12, FR-13, PRV-01, PRV-09, PRV-12)', () => 
   });
 
   it('rate limits sightings per notice', async () => {
-    const app = makeApp({ auth: 100, sightings: 2 });
+    const app = makeApp({ sightings: 2 });
     const owner = request.agent(app);
     await signUp(owner);
     const notice = await createNotice(owner);

@@ -3,8 +3,10 @@ import request from 'supertest';
 import type { NoticeInput, OwnerNotice } from '@petsearch/shared';
 import { setRole } from '../src/admin/roles.ts';
 import { createApp } from '../src/app.ts';
+import type { RateLimits } from '../src/lib/rate-limit.ts';
 
-export function makeApp(rateLimits = { auth: 1000, sightings: 1000 }) {
+export function makeApp(limits: Partial<RateLimits> = {}) {
+  const rateLimits = { auth: 1000, signInAccount: 1000, notices: 1000, sightings: 1000, ...limits };
   return createApp({
     sessionSecret: 'test-secret',
     cookieSecure: false,

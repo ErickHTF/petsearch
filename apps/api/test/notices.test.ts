@@ -24,6 +24,18 @@ describe('publishing notices (FR-01 to FR-06, PRV-03, PRV-08)', () => {
     expect(res.status).toBe(401);
   });
 
+  it('rate limits notice creation per account (PRV-09)', async () => {
+    const app = makeApp({ notices: 1 });
+    const agent = request.agent(app);
+    await signUp(agent);
+    await createNotice(agent);
+    const res = await agent.post('/api/notices').field('data', JSON.stringify(luna));
+    expect(res.status).toBe(429);
+    const other = request.agent(app);
+    await signUp(other, 'bia@exemplo.test');
+    await createNotice(other);
+  });
+
   it('requires at least one photo', async () => {
     const agent = request.agent(makeApp());
     await signUp(agent);

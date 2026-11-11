@@ -26,7 +26,7 @@ function destroy(req: Request) {
   );
 }
 
-export function authRouter(options: { limiter: RequestHandler }) {
+export function authRouter(options: { limiter: RequestHandler; signInLimiter: RequestHandler }) {
   const router = Router();
 
   router.post('/auth/sign-up', options.limiter, async (req, res) => {
@@ -53,7 +53,7 @@ export function authRouter(options: { limiter: RequestHandler }) {
     res.status(201).json(toSessionUser(user));
   });
 
-  router.post('/auth/sign-in', options.limiter, async (req, res) => {
+  router.post('/auth/sign-in', options.limiter, options.signInLimiter, async (req, res) => {
     const input = parse(signInSchema, req.body);
     const [user] = await db().select().from(users).where(eq(users.email, input.email));
     const valid = user

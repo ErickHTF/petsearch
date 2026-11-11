@@ -21,7 +21,7 @@ Every non-2xx response has the body `ApiError`: `{ error: string, fields?: Recor
 |---|---|---|---|
 | GET | `/auth/me` | - | `200 { user: SessionUser \| null }` |
 | POST | `/auth/sign-up` | `SignUpInput` (`signUpSchema`) | `201 SessionUser`, sets cookie; `409` if email exists |
-| POST | `/auth/sign-in` | `SignInInput` | `200 SessionUser`; `401` wrong credentials |
+| POST | `/auth/sign-in` | `SignInInput` | `200 SessionUser`; `401` wrong credentials. Rate limit 20 per 15 min per IP (shared with sign-up) and 10 per 15 min per email |
 | POST | `/auth/sign-out` | - | `204` |
 | DELETE | `/account` | - | `204`; deletes the account, its notices, sightings and images |
 
@@ -37,7 +37,7 @@ Every non-2xx response has the body `ApiError`: `{ error: string, fields?: Recor
 
 | Method | Path | Body | Response |
 |---|---|---|---|
-| POST | `/notices` | `multipart/form-data`: field `data` = JSON string of `NoticeInput`; files `photos` (1 to 3, JPEG/PNG/WebP, max 8 MB each) | `201 OwnerNotice`. Missing photos -> `400` with `fields.photos` |
+| POST | `/notices` | `multipart/form-data`: field `data` = JSON string of `NoticeInput`; files `photos` (1 to 3, JPEG/PNG/WebP, max 8 MB each) | `201 OwnerNotice`. Missing photos -> `400` with `fields.photos`. Rate limit 10 per hour per account |
 | PATCH | `/notices/:id` | `NoticeUpdate` | `200 OwnerNotice` |
 | POST | `/notices/:id/status` | `StatusUpdate` (`{ status, note? }`) | `200 OwnerNotice`; adds a timeline entry |
 | DELETE | `/notices/:id` | - | `204` |

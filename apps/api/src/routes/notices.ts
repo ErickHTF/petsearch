@@ -1,6 +1,6 @@
 // Notices: public list and detail, owner create/edit/status/delete (FR-01 to FR-11, FR-14, FR-15).
 import { and, arrayContains, count, desc, eq, gte, lte, type SQL } from 'drizzle-orm';
-import { Router } from 'express';
+import { Router, type RequestHandler } from 'express';
 import {
   LIMITS,
   NOTICE_STATUS_LABELS,
@@ -32,7 +32,7 @@ export function parseJsonField(value: unknown): unknown {
   }
 }
 
-export function noticesRouter() {
+export function noticesRouter(options: { limiter: RequestHandler }) {
   const router = Router();
   const upload = imageUpload(LIMITS.photosMax);
 
@@ -80,6 +80,7 @@ export function noticesRouter() {
   router.post(
     '/notices',
     requireUser,
+    options.limiter,
     upload.array('photos', LIMITS.photosMax),
     async (req, res) => {
       const input = parse(noticeInputSchema, parseJsonField(req.body.data));

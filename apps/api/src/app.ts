@@ -62,8 +62,8 @@ export function createApp(options: AppOptions) {
   api.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
   });
-  api.use(authRouter({ limiter: limiters.auth }));
-  api.use(noticesRouter());
+  api.use(authRouter({ limiter: limiters.auth, signInLimiter: limiters.signInAccount }));
+  api.use(noticesRouter({ limiter: limiters.notices }));
   api.use(sightingsRouter({ limiter: limiters.sightings }));
   api.use(meRouter());
   api.use(moderationRouter());

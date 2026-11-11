@@ -104,12 +104,26 @@ describe('auth and account (FR-16, PRV-03, PRV-04, PRV-07)', () => {
   });
 
   it('rate limits sign-in attempts', async () => {
-    const app = makeApp({ auth: 2, sightings: 5 });
+    const app = makeApp({ auth: 2 });
     const attempt = () =>
       request(app).post('/api/auth/sign-in').send({ email: 'x@exemplo.test', password: 'x' });
     await attempt();
     await attempt();
     expect((await attempt()).status).toBe(429);
+  });
+
+  it('rate limits sign-in attempts per account (PRV-09)', async () => {
+    const app = makeApp({ signInAccount: 2 });
+    await signUp(request.agent(app));
+    const attempt = (password: string) =>
+      request(app).post('/api/auth/sign-in').send({ email: 'ANA@exemplo.test', password });
+    expect((await attempt('errada-123')).status).toBe(401);
+    expect((await attempt('errada-456')).status).toBe(401);
+    expect((await attempt('senha-de-teste')).status).toBe(429);
+    const other = await request(app)
+      .post('/api/auth/sign-in')
+      .send({ email: 'bia@exemplo.test', password: 'errada-123' });
+    expect(other.status).toBe(401);
   });
 
   it('blocks cross-origin writes', async () => {
