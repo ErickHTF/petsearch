@@ -63,4 +63,6 @@ Sign-up always creates an `owner`. An operator grants or revokes the moderator r
 
 ## Health
 
-`GET /health` -> `200 { status: 'ok' }`.
+`GET /health` -> `200 { status: 'ok' }` while the process runs.
+
+`GET /ready` -> `200 { status: 'ok' }` when PostgreSQL answers, otherwise `503 { status: 'unavailable' }`.

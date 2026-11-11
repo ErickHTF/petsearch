@@ -63,6 +63,15 @@ export function createApp(options: AppOptions) {
   api.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
   });
+  // Readiness for the host: the process is up and PostgreSQL answers.
+  api.get('/ready', async (_req, res) => {
+    try {
+      await dbPool().query('SELECT 1');
+      res.json({ status: 'ok' });
+    } catch {
+      res.status(503).json({ status: 'unavailable' });
+    }
+  });
   api.use(authRouter({ limiter: limiters.auth, signInLimiter: limiters.signInAccount }));
   api.use(noticesRouter({ limiter: limiters.notices }));
   api.use(sightingsRouter({ limiter: limiters.sightings }));
