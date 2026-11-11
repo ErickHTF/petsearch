@@ -1,10 +1,10 @@
 // Accounts and sessions (FR-16, PRV-03, PRV-04, PRV-07).
 import argon2 from 'argon2';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { Router, type Request, type RequestHandler } from 'express';
 import { PRIVACY_POLICY_VERSION, signInSchema, signUpSchema } from '@petsearch/shared';
 import { db } from '../db/client.ts';
-import { users } from '../db/schema.ts';
+import { sessions, users } from '../db/schema.ts';
 import { HttpError, parse } from '../lib/errors.ts';
 import { requireUser } from '../lib/auth.ts';
 import { toSessionUser } from '../lib/serializers.ts';
@@ -79,9 +79,14 @@ export function authRouter(options: { limiter: RequestHandler }) {
     res.json({ user: user ? toSessionUser(user) : null });
   });
 
-  // Self-service deletion; foreign keys cascade to notices, events, sightings and images (PRV-07).
+  // Self-service deletion; foreign keys cascade to notices, events, sightings and images, and the
+  // account's sessions on other devices are removed with it (PRV-07).
   router.delete('/account', requireUser, async (req, res) => {
-    await db().delete(users).where(eq(users.id, req.session.userId!));
+    const userId = req.user!.id;
+    await db().transaction(async (tx) => {
+      await tx.delete(sessions).where(sql`${sessions.sess}->>'userId' = ${userId}`);
+      await tx.delete(users).where(eq(users.id, userId));
+    });
     await destroy(req);
     res.clearCookie(SESSION_COOKIE);
     res.status(204).end();

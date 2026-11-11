@@ -3,7 +3,7 @@ import { count, eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { setRole } from '../src/admin/roles.ts';
 import { db } from '../src/db/client.ts';
-import { images, notices, users } from '../src/db/schema.ts';
+import { images, notices, sessions, users } from '../src/db/schema.ts';
 import { createNotice, makeApp, signUp } from './helpers.ts';
 
 describe('auth and account (FR-16, PRV-03, PRV-04, PRV-07)', () => {
@@ -116,6 +116,21 @@ describe('auth and account (FR-16, PRV-03, PRV-04, PRV-07)', () => {
     expect(n!.n).toBe(0);
     expect(i!.n).toBe(0);
     expect((await agent.get('/api/auth/me')).body.user).toBeNull();
+  });
+
+  it('ends the account sessions on other devices when it is deleted (PRV-07)', async () => {
+    const app = makeApp();
+    const phone = request.agent(app);
+    const laptop = request.agent(app);
+    await signUp(phone);
+    await laptop
+      .post('/api/auth/sign-in')
+      .send({ email: 'ana@exemplo.test', password: 'senha-de-teste' });
+    await signUp(request.agent(app), 'bia@exemplo.test');
+    expect((await phone.delete('/api/account')).status).toBe(204);
+    const [s] = await db().select({ n: count() }).from(sessions);
+    expect(s!.n).toBe(1);
+    expect((await laptop.get('/api/auth/me')).body.user).toBeNull();
   });
 
   it('treats a session whose user no longer exists as signed out (PRV-04)', async () => {
