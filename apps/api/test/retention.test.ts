@@ -24,4 +24,26 @@ describe('retention (PRV-07)', () => {
     const remaining = (await db().select({ id: notices.id }).from(notices)).map((n) => n.id);
     expect(remaining.sort()).toEqual([recent.id, open.id].sort());
   });
+
+  it('counts from the first close when a notice moves from closed to reunited', async () => {
+    const agent = request.agent(makeApp());
+    await signUp(agent);
+    const notice = await createNotice(agent);
+    await agent.post(`/api/notices/${notice.id}/status`).send({ status: 'closed' });
+    const firstClose = new Date(Date.now() - 91 * 24 * 60 * 60 * 1000);
+    await db().update(notices).set({ closedAt: firstClose }).where(eq(notices.id, notice.id));
+    await agent.post(`/api/notices/${notice.id}/status`).send({ status: 'reunited' });
+
+    expect(await purgeExpired()).toBe(1);
+  });
+
+  it('clears the close date when a notice is reopened', async () => {
+    const agent = request.agent(makeApp());
+    await signUp(agent);
+    const notice = await createNotice(agent);
+    await agent.post(`/api/notices/${notice.id}/status`).send({ status: 'closed' });
+    await agent.post(`/api/notices/${notice.id}/status`).send({ status: 'open' });
+    const [row] = await db().select().from(notices).where(eq(notices.id, notice.id));
+    expect(row!.closedAt).toBeNull();
+  });
 });

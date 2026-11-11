@@ -175,7 +175,9 @@ export function noticesRouter(options: { limiter: RequestHandler }) {
         .update(notices)
         .set({
           status: input.status,
-          closedAt: input.status === 'open' ? null : changed ? now : current.closedAt,
+          // Moving between closed and reunited keeps the original date, so retention still counts
+          // from the first close (PRV-07).
+          closedAt: input.status === 'open' ? null : (current.closedAt ?? now),
           lastActivityAt: now,
         })
         .where(eq(notices.id, current.id))
