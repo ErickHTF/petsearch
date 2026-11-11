@@ -30,7 +30,7 @@ Every non-2xx response has the body `ApiError`: `{ error: string, fields?: Recor
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/notices?type&neighborhood&species&size&color&from&to&page` | Query matches `noticeFiltersSchema`. Only open, visible notices, newest `eventDate` first. Response `Page<PublicNotice>`, `pageSize` 12 |
-| GET | `/notices/:id` | `PublicNotice` for any visible notice (any status). `404` if hidden or unknown |
+| GET | `/notices/:id` | `PublicNotice` for any visible notice (any status). `404` if hidden, inactive (open with no activity for 90 days) or unknown |
 | GET | `/images/:id` | `image/webp`. Public photos of visible notices for everyone; sighting photos only for the notice owner or a moderator |
 
 ## Owner actions (FR-01 to FR-06, FR-13 to FR-15)
@@ -41,7 +41,7 @@ Every non-2xx response has the body `ApiError`: `{ error: string, fields?: Recor
 | PATCH | `/notices/:id` | `NoticeUpdate` | `200 OwnerNotice` |
 | POST | `/notices/:id/status` | `StatusUpdate` (`{ status, note? }`) | `200 OwnerNotice`; adds a timeline entry |
 | DELETE | `/notices/:id` | - | `204` |
-| GET | `/me/notices` | - | `200 OwnerNotice[]` (includes hidden ones, with `newSightings` count) |
+| GET | `/me/notices` | - | `200 OwnerNotice[]` (includes hidden ones, with `newSightings` count and `inactive`: open with no activity for 90 days, out of public view until the owner posts an update or edits it) |
 | GET | `/me/notices/:id` | - | `200 OwnerNotice` |
 | GET | `/me/notices/:id/sightings` | - | `200 OwnerSighting[]`, newest first, excluding moderator-hidden ones |
 | PATCH | `/me/sightings/:id` | `{ ownerState: 'new' \| 'useful' \| 'dismissed' }` | `200 OwnerSighting` |

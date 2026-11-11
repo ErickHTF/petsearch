@@ -5,6 +5,7 @@ import { db } from '../db/client.ts';
 import { images, notices } from '../db/schema.ts';
 import { notFound } from '../lib/errors.ts';
 import { uuidParam } from '../lib/ids.ts';
+import { isInactive } from '../lib/retention.ts';
 
 export function imagesRouter() {
   const router = Router();
@@ -16,6 +17,8 @@ export function imagesRouter() {
         visibility: images.visibility,
         ownerId: notices.ownerId,
         noticeHidden: notices.hidden,
+        status: notices.status,
+        lastActivityAt: notices.lastActivityAt,
       })
       .from(images)
       .innerJoin(notices, eq(notices.id, images.noticeId))
@@ -24,7 +27,7 @@ export function imagesRouter() {
 
     const isOwner = row.ownerId === req.user?.id;
     const isModerator = req.user?.role === 'moderator';
-    const isPublic = row.visibility === 'public' && !row.noticeHidden;
+    const isPublic = row.visibility === 'public' && !row.noticeHidden && !isInactive(row);
     if (!isPublic && !isOwner && !isModerator) throw notFound();
 
     res.set('Content-Type', 'image/webp');

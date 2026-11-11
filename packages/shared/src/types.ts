@@ -50,6 +50,8 @@ export interface PublicNotice {
 
 export interface OwnerNotice extends PublicNotice {
   hidden: boolean;
+  /** Open with no activity for 90 days: out of public view until the owner posts an update. */
+  inactive: boolean;
   newSightings: number;
 }
 

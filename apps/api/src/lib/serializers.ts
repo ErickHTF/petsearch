@@ -7,6 +7,7 @@ import type {
   SessionUser,
 } from '@petsearch/shared';
 import type { Notice, NoticeEvent, Sighting, User } from '../db/schema.ts';
+import { isInactive } from './retention.ts';
 
 export interface PhotoMeta {
   id: string;
@@ -65,7 +66,12 @@ export function toOwnerNotice(
   events: NoticeEvent[],
   newSightings: number,
 ): OwnerNotice {
-  return { ...toPublicNotice(notice, photos, events), hidden: notice.hidden, newSightings };
+  return {
+    ...toPublicNotice(notice, photos, events),
+    hidden: notice.hidden,
+    inactive: isInactive(notice),
+    newSightings,
+  };
 }
 
 export function toOwnerSighting(sighting: Sighting): OwnerSighting {

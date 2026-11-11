@@ -7,6 +7,7 @@ import { images, notices, sightings } from '../db/schema.ts';
 import { HttpError, notFound, parse } from '../lib/errors.ts';
 import { uuidParam } from '../lib/ids.ts';
 import { imageRows, imageUpload, processAll } from '../lib/images.ts';
+import { isInactive } from '../lib/retention.ts';
 import { parseJsonField } from './notices.ts';
 
 export function sightingsRouter(options: { limiter: RequestHandler }) {
@@ -26,10 +27,15 @@ export function sightingsRouter(options: { limiter: RequestHandler }) {
       }
       const input = parse(sightingInputSchema, raw);
       const [notice] = await db()
-        .select({ id: notices.id, status: notices.status, hidden: notices.hidden })
+        .select({
+          id: notices.id,
+          status: notices.status,
+          hidden: notices.hidden,
+          lastActivityAt: notices.lastActivityAt,
+        })
         .from(notices)
         .where(eq(notices.id, uuidParam(req.params.id)));
-      if (!notice || notice.hidden) throw notFound();
+      if (!notice || notice.hidden || isInactive(notice)) throw notFound();
       if (notice.status !== 'open') throw new HttpError(409, 'Este aviso não está mais aberto.');
 
       const processed = req.file

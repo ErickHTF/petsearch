@@ -7,7 +7,12 @@ import { Account } from './Account.tsx';
 import { ManageNotice } from './ManageNotice.tsx';
 import { mockFetch, noticeFixture, owner, renderRoute } from '../test/utils.tsx';
 
-const ownerNotice: OwnerNotice = { ...noticeFixture(), hidden: false, newSightings: 2 };
+const ownerNotice: OwnerNotice = {
+  ...noticeFixture(),
+  hidden: false,
+  inactive: false,
+  newSightings: 2,
+};
 const sighting: OwnerSighting = {
   id: 's1',
   noticeId: 'n1',

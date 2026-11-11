@@ -19,6 +19,7 @@ import { HttpError, notFound, parse } from '../lib/errors.ts';
 import { uuidParam } from '../lib/ids.ts';
 import { requireUser } from '../lib/auth.ts';
 import { imageRows, imageUpload, processAll } from '../lib/images.ts';
+import { publiclyVisible } from '../lib/retention.ts';
 import { loadOwnedNotice, ownerView, publicViews } from '../repo/notices.ts';
 
 export const PAGE_SIZE = 12;
@@ -38,7 +39,7 @@ export function noticesRouter(options: { limiter: RequestHandler }) {
 
   router.get('/notices', async (req, res) => {
     const filters = parse(noticeFiltersSchema, req.query);
-    const conditions: SQL[] = [eq(notices.hidden, false), eq(notices.status, 'open')];
+    const conditions: SQL[] = [publiclyVisible(), eq(notices.status, 'open')];
     if (filters.type) conditions.push(eq(notices.type, filters.type));
     if (filters.neighborhood) conditions.push(eq(notices.neighborhood, filters.neighborhood));
     if (filters.species) conditions.push(eq(notices.species, filters.species));
@@ -71,7 +72,7 @@ export function noticesRouter(options: { limiter: RequestHandler }) {
     const [notice] = await db()
       .select()
       .from(notices)
-      .where(and(eq(notices.id, uuidParam(req.params.id)), eq(notices.hidden, false)));
+      .where(and(eq(notices.id, uuidParam(req.params.id)), publiclyVisible()));
     if (!notice) throw notFound();
     const [view] = await publicViews([notice]);
     res.json(view);
